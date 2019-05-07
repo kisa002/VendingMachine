@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="LemonWater">
+    <file>LemonWater.png</file>
+  </qresource>
+</RCC>

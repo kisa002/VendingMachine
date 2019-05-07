@@ -17,6 +17,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(540, 600)
+
         self.btnDeveloper = QtWidgets.QPushButton(Dialog)
         self.btnDeveloper.setEnabled(True)
         self.btnDeveloper.setGeometry(QtCore.QRect(20, 550, 275, 30))
@@ -513,7 +514,7 @@ class Ui_Dialog(object):
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Base, brush)
-        brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
+        brush = QtGui.QBrush(QtGui.QColor(0, 168, 107))
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Active, QtGui.QPalette.Window, brush)
         brush = QtGui.QBrush(QtGui.QColor(0, 0, 0))
@@ -846,70 +847,10 @@ class Ui_Dialog(object):
             QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
 
     def OrderIcis(self):
-        print("오아시스")
+        print("아이시스")
 
     def Developer(self, test):
         QMessageBox.about(Dialog, "개발자 정보", "한국산업기술대학교 2019156023 유광무\n1학년 1학기 전산학기초 자판기 과제")
-
-    def OrderLemon(self):
-        print("OrderLemon")
-
-    def OrderCorn(self):
-        print("OrderCorn")
-
-    def OrderBurdock(self):
-        print("OrderBurdock")
-
-    def OrderTrevi(self):
-        print("OrderTrevi")
-
-    def OrderMilkis(self):
-        print("OrderMilkis")
-
-    def OrderPepsi(self):
-        print("OrderPepsi")
-
-    def OrderHotsix(self):
-        print("OrderHotsix")
-
-    def OrderCider(self):
-        print("")
-
-    def OrderCocoRich(self):
-        print("")
-
-    def OrderLipton(self):
-        print("")
-
-    def OrderSparklingApple(self):
-        print("")
-
-    def OrderSparklingGrape(self):
-        print("")
-
-    def OrderOrderGhana(self):
-        print("")
-
-    def OrderGhana(self):
-        print("")
-
-    def OrderLetsbe(self):
-        print("")
-
-    def OrderCantata(self):
-        print("")
-
-    def OrderLetsbeLatte(self):
-        print("")
-
-    def OrderGatorade(self):
-        print("")
-
-    def OrderCocoGrape(self):
-        print("")
-
-    def OrderSikhye(self):
-        print("")
 
     def InsertCoin(self):
         global coin
@@ -945,7 +886,7 @@ def AddDrink(name, price, count):
     drinkCount.append(count)
 
 def Init():
-    AddDrink("오아시스", 600, 5)
+    AddDrink("아이시스", 600, 5)
     AddDrink("레몬워터", 1500, 5)
     AddDrink("옥수수 수염차", 1300, 5)
     AddDrink("초가을 우엉차", 1300, 5)
