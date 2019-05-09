@@ -846,9 +846,6 @@ class Ui_Dialog(object):
         else:
             QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
 
-    def OrderIcis(self):
-        print("아이시스")
-
     def Developer(self, test):
         QMessageBox.about(Dialog, "개발자 정보", "한국산업기술대학교 2019156023 유광무\n1학년 1학기 전산학기초 자판기 과제")
 
@@ -856,9 +853,6 @@ class Ui_Dialog(object):
         global coin
 
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 금액을 입력해주세요\n(최대 투입 금액: 10,000원)", 100, 0, 19000, 1)
-        # if okPressed:
-        #     QMessageBox.about(Dialog, "안내", str(coin) + "원을 투입하였습니다")
-
         coin += i
 
         ui.lblPrice.setText(str(coin) + "원")
