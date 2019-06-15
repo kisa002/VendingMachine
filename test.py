@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 import sys
+import math
 import requests
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import * # QApplication, QWidget, QPushButton, QMessageBox, QLineEdit, QInputDialog
@@ -857,7 +858,7 @@ class UiDialog(object):
         self.lblPrice.setText(_translate("Dialog", "0원"))
 
     def OrderDrink(self, index):
-        global drinkName, drinkPrice, drinkCount
+        global drinkName, drinkPrice, drinkCount, insertCoin
 
         price = drinkPrice[index]
 
@@ -868,27 +869,15 @@ class UiDialog(object):
                     # 동전 없다는 경고 띄어주기
                     # return False
 
-            if insertCoin.GetSum() >= price:
-                for coin in list(insertCoin.coin.keys()):
-                    if insertCoin.GetCoin(coin) <= 0:
-                        break
+                if insertCoin >= price:
+                    insertCoin -= price
+                    drinkCount[index] -= 1
 
-                    count = price // coin
-                    price -= coin * count
-
-                    insertCoin.DecreaseCoin(coin, count)
-                    print("PRICE:", price)
-                    print("SET COIN:", coin)
-                    print("GET COIN:", insertCoin.GetCoin(coin))
-                    print("GET COUNT:", insertCoin.GetCoin(coin) // coin)
-                    print("-----------")
-                    # print(insertCoin.GetSum())
-
-                QMessageBox.about(Dialog, "음료수 구매 성공", drinkName[index] + "(을)를 " + str(drinkPrice[index]) + "원에 구매하였습니다.\n남은 갯수: " + str(drinkCount[index]) + "개")
-                ui.lblPrice.setText(str(insertCoin.GetSum()) + "원")
-                Dialog.repaint()
-            else:
-                QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
+                    QMessageBox.about(Dialog, "음료수 구매 성공", drinkName[index] + "(을)를 " + str(drinkPrice[index]) + "원에 구매하였습니다.\n남은 갯수: " + str(drinkCount[index]) + "개")
+                    ui.lblPrice.setText(str(insertCoin) + "원")
+                    Dialog.repaint()
+                else:
+                    QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
 
 
         # if coin >= drinkPrice[index]:
@@ -912,35 +901,37 @@ class UiDialog(object):
         QMessageBox.about(Dialog, "개발자 정보", "한국산업기술대학교 2019156023 유광무\n1학년 1학기 전산학기초 자판기 과제")
 
     def InsertCoin(self):
+        global insertCoin
+
         # i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 금액을 입력해주세요\n(최대 투입 금액: 10,000원)", 100, 0, 19000, 1)
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 1000원 지폐의 갯수를 입력해주세요")
-        insertCoin.IncreaseCoin(1000, i)
+        insertCoin += 1000 * i
         machineCoin.IncreaseCoin(1000, i)
 
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 500원 동전의 갯수를 입력해주세요")
-        insertCoin.IncreaseCoin(500, i)
+        insertCoin += 500 * i
         machineCoin.IncreaseCoin(500, i)
 
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 100원 동전의 갯수를 입력해주세요")
-        insertCoin.IncreaseCoin(100, i)
+        insertCoin += 100 * i
         machineCoin.IncreaseCoin(100, i)
 
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 50원 동전의 갯수를 입력해주세요")
-        insertCoin.IncreaseCoin(50, i)
+        insertCoin += 50 * i
         machineCoin.IncreaseCoin(50, i)
 
         i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 10원 동전의 갯수를 입력해주세요")
-        insertCoin.IncreaseCoin(10, i)
+        insertCoin += 10 * i
         machineCoin.IncreaseCoin(10, i)
 
-        ui.lblPrice.setText(str(insertCoin.GetSum()) + "원")
+        ui.lblPrice.setText(str(insertCoin) + "원")
         Dialog.repaint()
 
     def ReturnCoin(self):
-        QMessageBox.about(Dialog, "현금 반환", "현금을 " + str(insertCoin.GetSum()) + "원을 반환하였습니다")
+        QMessageBox.about(Dialog, "현금 반환", "현금을 " + str(insertCoin) + "원을 반환하였습니다")
         insertCoin.Reset()
 
-        ui.lblPrice.setText(str(insertCoin.GetSum()) + "원")
+        ui.lblPrice.setText(str(insertCoin) + "원")
         Dialog.repaint()
 
     def CheckDrinkCount(self, index):
@@ -965,7 +956,7 @@ class UiDialog(object):
 
 
 machineCoin = Coin()
-insertCoin = Coin()
+insertCoin = 0
 
 drinkName = []
 drinkPrice = []
