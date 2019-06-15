@@ -15,13 +15,16 @@ from PyQt5.QtWidgets import * # QApplication, QWidget, QPushButton, QMessageBox,
 
 class Coin(object):
     def __init__(self):
-        self.coin = {1000: 0, 500: 0, 100: 0, 50: 0, 10: 0}
+        self.coin = {1000: 6, 500: 6, 100: 6, 50: 6, 10: 6}
 
     def IncreaseCoin(self, type, amount):
         self.coin[type] += amount
 
     def DecreaseCoin(self, type, amount):
         self.coin[type] -= amount
+
+        if self.coin[type] <= 5:
+            SendCoinMail(type, self.coin[type])
 
     def GetSum(self):
         return (self.coin[1000] * 1000) + (self.coin[500] * 500) + (self.coin[100] * 100) + (self.coin[50] * 50) + (self.coin[10] * 10)
@@ -47,7 +50,7 @@ class UiDialog(object):
 
         self.btnDeveloper = QtWidgets.QPushButton(Dialog)
         self.btnDeveloper.setEnabled(True)
-        self.btnDeveloper.setGeometry(QtCore.QRect(20, 550, 275, 30))
+        self.btnDeveloper.setGeometry(QtCore.QRect(20, 550, 150, 30))
         self.btnDeveloper.setAutoDefault(False)
         self.btnDeveloper.setObjectName("btnDeveloper")
         self.imgIcis1 = QtWidgets.QLabel(Dialog)
@@ -508,8 +511,19 @@ class UiDialog(object):
         self.btnInsert.setGeometry(QtCore.QRect(370, 550, 80, 30))
         self.btnInsert.setObjectName("btnInsert")
         self.btnInsert.setAutoDefault(False)
+        self.lblCoin1000 = QtWidgets.QLabel(Dialog)
+        self.lblCoin1000.setGeometry(QtCore.QRect(180, 545, 75, 30))
+        self.lblCoin500 = QtWidgets.QLabel(Dialog)
+        self.lblCoin500.setGeometry(QtCore.QRect(186, 558, 75, 30))
+        self.lblCoin100 = QtWidgets.QLabel(Dialog)
+        self.lblCoin100.setGeometry(QtCore.QRect(250, 545, 75, 30))
+        self.lblCoin50 = QtWidgets.QLabel(Dialog)
+        self.lblCoin50.setGeometry(QtCore.QRect(256, 558, 75, 30))
+        self.lblCoin10 = QtWidgets.QLabel(Dialog)
+        self.lblCoin10.setGeometry(QtCore.QRect(315, 545, 75, 30))
         self.lblPrice = QtWidgets.QLabel(Dialog)
-        self.lblPrice.setGeometry(QtCore.QRect(295, 550, 75, 30))
+        self.lblPrice.setGeometry(QtCore.QRect(311, 567, 50, 30))
+        self.lblPrice.setAlignment(QtCore.Qt.AlignCenter)
         palette = QtGui.QPalette()
         brush = QtGui.QBrush(QtGui.QColor(255, 0, 10))
         brush.setStyle(QtCore.Qt.SolidPattern)
@@ -656,7 +670,7 @@ class UiDialog(object):
         brush.setStyle(QtCore.Qt.SolidPattern)
         palette.setBrush(QtGui.QPalette.Disabled, QtGui.QPalette.PlaceholderText, brush)
         self.lblPrice.setPalette(palette)
-        self.lblPrice.setAlignment(QtCore.Qt.AlignCenter)
+        self.lblPrice.setAlignment(QtCore.Qt.AlignRight)
         self.lblPrice.setObjectName("lblPrice")
         self.imgCantata.raise_()
         self.imgPepsi_2.raise_()
@@ -792,7 +806,7 @@ class UiDialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "E동 5층 자판기"))
-        self.btnDeveloper.setText(_translate("Dialog", "한국산업기술대학교 2019156023 유광무"))
+        self.btnDeveloper.setText(_translate("Dialog", "KPU 2019156023 유광무"))
         self.btnOrderIcis2.setText(_translate("Dialog", "주문"))
         self.priceIcis1.setText(_translate("Dialog", "600원"))
         self.priceIcis2.setText(_translate("Dialog", "600원"))
@@ -855,112 +869,64 @@ class UiDialog(object):
         self.priceSikhye.setText(_translate("Dialog", "800원"))
         self.btnReturn.setText(_translate("Dialog", "현금 반환"))
         self.btnInsert.setText(_translate("Dialog", "현금 투입"))
+        self.lblCoin1000.setText(_translate("Dialog", "1000원: 0"))
+        self.lblCoin500.setText(_translate("Dialog", "500원: 0"))
+        self.lblCoin100.setText(_translate("Dialog", "100원: 0"))
+        self.lblCoin50.setText(_translate("Dialog", "50원: 0"))
+        self.lblCoin10.setText(_translate("Dialog", "10원: 0"))
         self.lblPrice.setText(_translate("Dialog", "0원"))
 
     def OrderDrink(self, index):
         global drinkName, drinkPrice, drinkCount, insertCoin
 
-        price = drinkPrice[index]
-
         if drinkCount[index] > 0:
-            # for i in range(len(list(machineCoin.coin.keys()))):
-                # if insertCoin.GetCoinIndex(i) <= machineCoin.GetCoinIndex(i):
-                    # print("ERROR:", machineCoin.GetCoinIndex(i)[0])
-                    # 동전 없다는 경고 띄어주기
-                    # return False
+            if insertCoin >= drinkPrice[index]:
+                insertCoin -= drinkPrice[index]
+                drinkCount[index] -= 1
 
-                if insertCoin >= price:
-                    insertCoin -= price
-                    drinkCount[index] -= 1
+                if drinkCount[index] <= 5:
+                    SendDrinkMail(drinkName[index], drinkCount[index])
 
-                    QMessageBox.about(Dialog, "음료수 구매 성공", drinkName[index] + "(을)를 " + str(drinkPrice[index]) + "원에 구매하였습니다.\n남은 갯수: " + str(drinkCount[index]) + "개")
-                    ui.lblPrice.setText(str(insertCoin) + "원")
-                    Dialog.repaint()
-                else:
-                    QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
+                QMessageBox.about(Dialog, "음료수 구매 성공", drinkName[index] + "(을)를 " + str(drinkPrice[index]) + "원에 구매하였습니다.\n남은 갯수: " + str(drinkCount[index]) + "개")
+                ui.lblPrice.setText(str(insertCoin) + "원")
+                Dialog.repaint()
+            else:
+                QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
+        else:
+            QMessageBox.about(Dialog, "음료수 구매 실패", drinkName[index] + " 음료수의 갯수가 없습니다")
 
-
-        # if coin >= drinkPrice[index]:
-        #     if drinkCount[index] > 0:
-        #         coin -= drinkPrice[index]
-        #         drinkCount[index] -= 1
-        #
-        #         QMessageBox.about(Dialog, "음료수 구매 성공", drinkName[index] + "(을)를 " + str(drinkPrice[index]) + "원에 구매하였습니다.\n남은 갯수: " + str(drinkCount[index]) + "개")
-        #         ui.lblPrice.setText(str(coin) + "원")
-        #         Dialog.repaint()
-        #
-        #         URL = 'https://haeyum.ml/PHPMailer/vendingMachine/api/bought?drinkName=' + drinkName[index] + '&drinkCount=' + str(drinkCount[index])
-        #
-        #         response = requests.get(URL)
-        #     else:
-        #         QMessageBox.about(Dialog, "음료수 구매 실패", drinkName[index] + " 음료수의 갯수가 없습니다")
-        # else:
-        #     QMessageBox.about(Dialog, "음료수 구매 실패", "금액이 부족합니다")
-
-    def Developer(self, test):
+    def Developer(self):
         QMessageBox.about(Dialog, "개발자 정보", "한국산업기술대학교 2019156023 유광무\n1학년 1학기 전산학기초 자판기 과제")
 
     def InsertCoin(self):
         global insertCoin
 
         # i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 금액을 입력해주세요\n(최대 투입 금액: 10,000원)", 100, 0, 19000, 1)
-        i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 1000원 지폐의 갯수를 입력해주세요")
-        insertCoin += 1000 * i
-        machineCoin.IncreaseCoin(1000, i)
 
-        i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 500원 동전의 갯수를 입력해주세요")
-        insertCoin += 500 * i
-        machineCoin.IncreaseCoin(500, i)
+        for coin in list(machineCoin.coin.keys()):
+            i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 " + str(coin) + "원의 갯수를 입력해주세요")
+            insertCoin += coin * i
+            machineCoin.IncreaseCoin(coin, i)
 
-        i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 100원 동전의 갯수를 입력해주세요")
-        insertCoin += 100 * i
-        machineCoin.IncreaseCoin(100, i)
-
-        i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 50원 동전의 갯수를 입력해주세요")
-        insertCoin += 50 * i
-        machineCoin.IncreaseCoin(50, i)
-
-        i, okPressed = QInputDialog.getInt(Dialog, "현금 투입", "투입할 10원 동전의 갯수를 입력해주세요")
-        insertCoin += 10 * i
-        machineCoin.IncreaseCoin(10, i)
-
-        ui.lblPrice.setText(str(insertCoin) + "원")
-        Dialog.repaint()
+        RefreshUI()
 
     def ReturnCoin(self):
-        QMessageBox.about(Dialog, "현금 반환", "현금을 " + str(insertCoin) + "원을 반환하였습니다")
-        insertCoin.Reset()
+        global insertCoin
+        QMessageBox.about(Dialog, "현금 반환", "현금 " + str(insertCoin) + "원을 반환하였습니다")
 
-        ui.lblPrice.setText(str(insertCoin) + "원")
-        Dialog.repaint()
+        for coin in list(machineCoin.coin.keys()):
+            count = insertCoin // coin
 
-    def CheckDrinkCount(self, index):
-        if drinkCount[index] > 0:
-            drinkCount[index] -= 1
+            if machineCoin.coin[coin] < count:
+                count = machineCoin.coin[coin]
 
-    def CheckCoin(self):
-        # if list(insertCoin.values()) <= list(machineCoin.values())[i]:
+            machineCoin.DecreaseCoin(coin, count)
 
-        for i in range(len(list(machineCoin.coin.keys()))):
-            if insertCoin.GetCoinIndex(i) <= machineCoin.GetCoinIndex(i):
-                print("ERROR:", machineCoin.GetCoinIndex(i)[0])
-                return False
+            insertCoin -= coin * count
 
-        return True
+        insertCoin = 0
 
-    def CheckPrice(self, price):
-        if insertCoin.GetCoin() >= price:
-            return True
-        else:
-            return False
-
-
-machineCoin = Coin()
-insertCoin = 0
-
-drinkName = []
-drinkPrice = []
-drinkCount = []
+        RefreshUI()
 
 
 def AddDrink(name, price, count):
@@ -994,19 +960,69 @@ def Init():
     AddDrink("잔치집 식혜", 800, 5)
 
 
+def RefreshUI():
+    global ui, Dialog
+    ui.lblCoin1000.setText("1000원: " + str(machineCoin.coin[1000]))
+    ui.lblCoin500.setText("500원: " + str(machineCoin.coin[500]))
+    ui.lblCoin100.setText("100원: " + str(machineCoin.coin[100]))
+    ui.lblCoin50.setText("50원: " + str(machineCoin.coin[50]))
+    ui.lblCoin10.setText("10원: " + str(machineCoin.coin[10]))
+    ui.lblPrice.setText(str(insertCoin) + "원")
+    Dialog.repaint()
+
+
+def ConnectWeb(url):
+    requests.get(url)
+
+
+def SendDrinkMail(drinkName, drinkCount):
+    global email
+
+    ConnectWeb('https://haeyum.ml/PHPMailer/vendingMachine/api/drink?address=' + email + '&drinkName=' + drinkName + '&drinkCount=' + str(drinkCount))
+
+
+def SendCoinMail(coinName, coinCount):
+    global email
+
+    ConnectWeb('https://haeyum.ml/PHPMailer/vendingMachine/api/coin?address=' + email + '&coinName=' + str(coinName) + '&coinCount=' + str(coinCount))
+
+
 def Main():
-    Init()
+    global machineCoin,  insertCoin, drinkName, drinkPrice, drinkCount
+    global Dialog, ui, app
+    global email
 
+    email = "vnycall74@naver.com" # 자판기 음료와 잔액 부족 메일을 받기위해 반드시 입력해주세요
 
-if __name__ == "__main__":
+    machineCoin = Coin()
+    insertCoin = 0
+
+    drinkName = []
+    drinkPrice = []
+    drinkCount = []
+
     Init()
 
     app = QtWidgets.QApplication(sys.argv)
     Dialog = QtWidgets.QDialog()
     ui = UiDialog()
     ui.setupUi(Dialog)
+
+    ui.lblCoin1000.setText("1000원: " + str(machineCoin.coin[1000]))
+    ui.lblCoin500.setText("500원: " + str(machineCoin.coin[500]))
+    ui.lblCoin100.setText("100원: " + str(machineCoin.coin[100]))
+    ui.lblCoin50.setText("50원: " + str(machineCoin.coin[50]))
+    ui.lblCoin10.setText("10원: " + str(machineCoin.coin[10]))
+
     Dialog.show()
+
+    if email == "":
+        QMessageBox.about(Dialog, "시스템 오류", "관리자의 이메일 주소가 입력되지 않아\n제품 품절 및 잔액 부족 메일을 보낼 수 없습니다.\n\n소스코드에서 email 변수에 관리자의 이메일 주소를 입력해주세요")
+    else:
+        QMessageBox.about(Dialog, "Welcome", "KPU 자판기에 오신 것을 환영합니다.\n\n" + email + " 계정으로 연동되었습니다.")
+
     sys.exit(app.exec_())
 
-# global drinkName
-# print(drinkName)
+
+if __name__ == "__main__":
+    Main()
